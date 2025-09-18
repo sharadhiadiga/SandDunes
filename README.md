@@ -16,14 +16,14 @@ A **Flask + MySQL based Hotel Management System** that allows managing bookings,
 ---
 
 ## 📂 Project Structure
-├── app.py # Flask backend
-├── requirements.txt # Python dependencies
-├── templates/ # Jinja2 templates (HTML pages)
+├── app.py
+├── requirements.txt 
+├── templates/
 ├── static/
-│ ├── css/style.css # Custom styles
-│ └── js/script.js # Client-side logic
-├── db/ # Database configuration
-└── .env # Environment variables
+│ ├── css/style.css 
+│ └── js/script.js 
+├── db/ 
+└── .env
 
 ---
 
