@@ -1,4 +1,4 @@
-# 🏨 Hotel Management System
+# 🏨 SandDunes - Hotel Management System
 
 A **Flask + MySQL based Hotel Management System** that allows managing bookings, availability, check-ins, services, and billing.
 
