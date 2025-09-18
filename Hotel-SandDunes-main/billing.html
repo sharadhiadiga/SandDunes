@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Billing{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Bill Details</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Customer Information -->
+                    <div class="mb-4">
+                        <h4>Customer Details</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Name:</strong> {{ bill.first_name }} {{ bill.last_name }}</p>
+                                <p><strong>Email:</strong> {{ bill.email }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Phone:</strong> {{ bill.phone }}</p>
+                                <p><strong>Room:</strong> {{ bill.room_number }} ({{ bill.type_name }})</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stay Details -->
+                    <div class="mb-4">
+                        <h4>Stay Details</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Check-in:</strong> {{ bill.check_in_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                                <p><strong>Check-out:</strong> {{ bill.check_out_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Payment Method:</strong> {{ bill.payment_method|title }}</p>
+                                <p><strong>Payment Status:</strong> 
+                                    <span class="badge {% if bill.payment_status == 'paid' %}bg-success{% else %}bg-warning{% endif %}">
+                                        {{ bill.payment_status|title }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Services Used -->
+                    {% if services %}
+                    <div class="mb-4">
+                        <h4>Services Used</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in services %}
+                                <tr>
+                                    <td>{{ service.service_name }}</td>
+                                    <td>{{ service.quantity }}</td>
+                                    <td>${{ service.price }}</td>
+                                    <td>${{ service.total_price }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+
+                    <!-- Billing Summary -->
+                    <div class="mb-4">
+                        <h4>Billing Summary</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Room Charges:</strong> ${{ bill.room_charges }}</p>
+                                <p><strong>Service Charges:</strong> ${{ bill.service_charges }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Tax ({{ bill.tax_rate }}%):</strong> ${{ bill.tax_amount }}</p>
+                                <p><strong>Total Amount:</strong> ${{ bill.total_amount }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if bill.payment_status == 'pending' %}
+                    <form method="POST" action="{{ url_for('billing', bill_id=bill.bill_id) }}" class="mt-4" id="paymentForm">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Confirm Payment</button>
+                            <a href="{{ url_for('checkout') }}" class="btn btn-secondary">Back to Checkout</a>
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="d-grid gap-2 mt-4">
+                        <a href="{{ url_for('checkout') }}" class="btn btn-primary">Back to Checkout</a>
+                        <button onclick="window.print()" class="btn btn-outline-primary">Print Bill</button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">Success!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="window.location.reload()">Refresh Page</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('paymentForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (confirm('Are you sure you want to confirm the payment and complete check-out?')) {
+        fetch(this.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('successMessage').textContent = data.message;
+                new bootstrap.Modal(document.getElementById('successModal')).show();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error);
+        });
+    }
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+        .navbar, .btn, .footer {
+            display: none !important;
+        }
+        .card {
+            border: none !important;
+        }
+        .card-header {
+            background-color: white !important;
+        }
+    }
+</style>
+{% endblock %} 

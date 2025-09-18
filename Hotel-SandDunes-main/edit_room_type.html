@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Room Type{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Edit Room Type</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('edit_room_type', type_id=room_type.type_id) }}">
+                        <div class="mb-3">
+                            <label for="type_name" class="form-label">Room Type Name</label>
+                            <input type="text" class="form-control" id="type_name" name="type_name" value="{{ room_type.type_name }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" required>{{ room_type.description }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="base_price" class="form-label">Base Price per Night ($)</label>
+                            <input type="number" class="form-control" id="base_price" name="base_price" min="0" step="0.01" value="{{ room_type.base_price }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="capacity" class="form-label">Capacity (persons)</label>
+                            <input type="number" class="form-control" id="capacity" name="capacity" min="1" value="{{ room_type.capacity }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="amenities" class="form-label">Amenities</label>
+                            <textarea class="form-control" id="amenities" name="amenities" rows="2" required>{{ room_type.amenities }}</textarea>
+                            <div class="form-text">Enter amenities separated by commas (e.g., WiFi, TV, AC, Mini Bar)</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Update Room Type</button>
+                            <a href="{{ url_for('room_types') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

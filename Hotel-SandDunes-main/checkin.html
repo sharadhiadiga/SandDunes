@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Check In{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Check In Guest</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Booking Selection Section -->
+                    <div class="mb-4">
+                        <h5>Select Booking</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="booking_id" class="form-label">Booking</label>
+                                <select class="form-select" id="booking_id" name="booking_id" required>
+                                    <option value="">Select a booking...</option>
+                                    {% for booking in bookings %}
+                                    <option value="{{ booking.booking_id }}" 
+                                            data-first-name="{{ booking.first_name }}"
+                                            data-last-name="{{ booking.last_name }}"
+                                            data-email="{{ booking.email }}"
+                                            data-room-number="{{ booking.room_number }}"
+                                            data-room-type="{{ booking.type_name }}"
+                                            data-check-in="{{ booking.check_in_date.strftime('%Y-%m-%dT%H:%M') }}"
+                                            data-check-out="{{ booking.check_out_date.strftime('%Y-%m-%dT%H:%M') }}">
+                                        {{ booking.display_text }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="id_type" class="form-label">ID Type</label>
+                                <select class="form-select" id="id_type" name="id_type" required>
+                                    <option value="">Select ID Type</option>
+                                    <option value="passport">Passport</option>
+                                    <option value="drivers_license">Driver's License</option>
+                                    <option value="national_id">National ID</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="id_number" class="form-label">ID Number</label>
+                                <input type="text" class="form-control" id="id_number" name="id_number" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <button type="button" class="btn btn-primary" id="verifyBooking">Verify Booking</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Check-in Form (initially hidden) -->
+                    <form method="POST" action="{{ url_for('checkin') }}" id="checkinForm" style="display: none;">
+                        <input type="hidden" id="verified_booking_id" name="verified_booking_id">
+                        <input type="hidden" id="verified_customer_id" name="verified_customer_id">
+                        
+                        <h5 class="mb-3">Guest Information</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" readonly>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="2" readonly></textarea>
+                        </div>
+
+                        <h5 class="mb-3">Room Information</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="room_number" class="form-label">Room Number</label>
+                                <input type="text" class="form-control" id="room_number" name="room_number" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="room_type" class="form-label">Room Type</label>
+                                <input type="text" class="form-control" id="room_type" name="room_type" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="check_in_date" class="form-label">Check-in Date & Time</label>
+                                <input type="datetime-local" class="form-control" id="check_in_date" name="check_in_date" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="check_out_date" class="form-label">Check-out Date & Time</label>
+                                <input type="datetime-local" class="form-control" id="check_out_date" name="check_out_date" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="special_requests" class="form-label">Special Requests</label>
+                            <textarea class="form-control" id="special_requests" name="special_requests" rows="3"></textarea>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Complete Check-in</button>
+                            <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Set minimum datetime to now for check-in
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('check_in_date').min = now.toISOString().slice(0, 16);
+    
+    // Update check-out minimum when check-in changes
+    document.getElementById('check_in_date').addEventListener('change', function() {
+        document.getElementById('check_out_date').min = this.value;
+    });
+
+    // Verify booking
+    document.getElementById('verifyBooking').addEventListener('click', function() {
+        const bookingId = document.getElementById('booking_id').value;
+        const idType = document.getElementById('id_type').value;
+        const idNumber = document.getElementById('id_number').value;
+
+        if (!bookingId || !idType || !idNumber) {
+            alert('Please fill in all verification fields');
+            return;
+        }
+
+        // Send verification request
+        fetch(`/verify_booking?booking_id=${bookingId}&id_type=${idType}&id_number=${idNumber}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show check-in form and populate fields
+                    document.getElementById('checkinForm').style.display = 'block';
+                    document.getElementById('verified_booking_id').value = data.booking_id;
+                    document.getElementById('verified_customer_id').value = data.customer_id;
+                    document.getElementById('first_name').value = data.first_name;
+                    document.getElementById('last_name').value = data.last_name;
+                    document.getElementById('email').value = data.email;
+                    document.getElementById('phone').value = data.phone;
+                    document.getElementById('address').value = data.address;
+                    document.getElementById('room_number').value = data.room_number;
+                    document.getElementById('room_type').value = data.room_type;
+                    document.getElementById('check_in_date').value = data.check_in_date;
+                    document.getElementById('check_out_date').value = data.check_out_date;
+                } else {
+                    alert(data.message || 'Verification failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error verifying booking');
+            });
+    });
+
+    // Pre-fill form when booking is selected
+    document.getElementById('booking_id').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption.value) {
+            document.getElementById('first_name').value = selectedOption.dataset.firstName;
+            document.getElementById('last_name').value = selectedOption.dataset.lastName;
+            document.getElementById('email').value = selectedOption.dataset.email;
+            document.getElementById('room_number').value = selectedOption.dataset.roomNumber;
+            document.getElementById('room_type').value = selectedOption.dataset.roomType;
+            document.getElementById('check_in_date').value = selectedOption.dataset.checkIn;
+            document.getElementById('check_out_date').value = selectedOption.dataset.checkOut;
+        }
+    });
+</script>
+{% endblock %} 

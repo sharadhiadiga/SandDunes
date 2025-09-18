@@ -1,0 +1,379 @@
+{% extends "base.html" %}
+
+{% block title %}Room Availability{% endblock %}
+
+{% block extra_css %}
+<style>
+    .room-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .room-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .room-image {
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .room-image::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4));
+    }
+
+    .room-number {
+        position: absolute;
+        bottom: 10px;
+        left: 15px;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .room-details {
+        padding: 1.5rem;
+    }
+
+    .room-type {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .room-price {
+        color: var(--dark-color);
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .room-features {
+        margin-bottom: 1rem;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        color: #666;
+    }
+
+    .feature-item i {
+        color: var(--primary-color);
+        margin-right: 0.5rem;
+        width: 20px;
+    }
+
+    .room-description {
+        color: #666;
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+    }
+
+    .book-now-btn {
+        width: 100%;
+        padding: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .availability-header {
+        background: linear-gradient(rgba(229, 238, 248, 0.516), rgba(176, 187, 202, 0.67)), 
+                    url('https://wallpapercave.com/wp/wp1846068.jpg');
+        background-size: cover;
+        background-position: center;
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+        text-align: center;
+        height: 40vh;
+    }
+
+    .availability-title {
+        color: rgba(255, 255, 255, 0.829);
+        font-size: 2.5rem;
+        font-weight: bold;
+        font-style: italic;
+        margin-bottom: 1rem;
+    }
+
+    .availability-subtitle {
+        color: #f4f2f2;
+        font-style: italic;
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .filter-section {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+
+    .filter-title {
+        color: var(--dark-color);
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .no-rooms-message {
+        text-align: center;
+        padding: 2rem;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-top: 2rem;
+    }
+
+    .availability-header {
+        background: url('https://wallpapercave.com/wp/wp1846068.jpg');
+        background-size: cover;
+        background-position: center;
+        height: 90vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        position: relative;
+
+        .container {
+        max-width: 500px;
+        padding: 2rem;
+        position: relative;
+        z-index: 2;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 15px;
+    }
+    }
+
+    
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<section class="availability-header">
+    <div class="container">
+        <h1 class="availability-title" font-style="sans-serif">Available Rooms</h1>
+        <p class="availability-subtitle" font-style="sans-serif">Choose from our selection of comfortable and luxurious accommodations</p>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <div class="row">
+            <div class="col-md-3">
+                <h5 class="filter-title">Room Type</h5>
+                <select class="form-select" id="roomType">
+                    <option value="">All Types</option>
+                    {% for room in rooms %}
+                    <option value="{{ room.type_name }}">{{ room.type_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <h5 class="filter-title">Price Range</h5>
+                <select class="form-select" id="priceRange">
+                    <option value="">All Prices</option>
+                    <option value="0-100">$0 - $100</option>
+                    <option value="100-200">$100 - $200</option>
+                    <option value="200+">$200+</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <h5 class="filter-title">Capacity</h5>
+                <select class="form-select" id="capacity">
+                    <option value="">All Capacities</option>
+                    {% for room in rooms %}
+                    <option value="{{ room.capacity }}">{{ room.capacity }} People</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <h5 class="filter-title">Sort By</h5>
+                <select class="form-select" id="sortBy">
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="capacity">Capacity</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rooms Grid -->
+    <div class="row" id="roomsContainer">
+        {% for room in rooms %}
+        <div class="col-md-6 col-lg-4 room-card-wrapper" 
+             data-type="{{ room.type_name }}"
+             data-price="{{ room.base_price }}"
+             data-capacity="{{ room.capacity }}">
+            <div class="room-card">
+                <div class="room-image" style="background-image: url('https://media.cnn.com/api/v1/images/stellar/prod/171109145517-06-cozy-hotels-redefining-luxury.jpg?q=w_1110,c_fill');">
+                    <div class="room-number">Room {{ room.room_number }}</div>
+                </div>
+                <div class="room-details">
+                    <h3 class="room-type">{{ room.type_name }}</h3>
+                    <div class="room-price">${{ room.base_price }} / night</div>
+                    <div class="room-features">
+                        <div class="feature-item">
+                            <i class="fas fa-users"></i>
+                            <span>Capacity: {{ room.capacity }} people</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-bed"></i>
+                            <span>{{ room.type_name }} Bed</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-wifi"></i>
+                            <span>Free WiFi</span>
+                        </div>
+                    </div>
+                    <p class="room-description">{{ room.description }}</p>
+                    <a href="{{ url_for('booking', room_id=room.room_id) }}" class="btn btn-primary book-now-btn">
+                        Book Now
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- No Rooms Message -->
+    <div class="no-rooms-message" id="noRoomsMessage" style="display: none;">
+        <h3>No rooms match your criteria</h3>
+        <p>Please try adjusting your filters</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roomTypeFilter = document.getElementById('roomType');
+    const priceRangeFilter = document.getElementById('priceRange');
+    const capacityFilter = document.getElementById('capacity');
+    const sortByFilter = document.getElementById('sortBy');
+    const roomsContainer = document.getElementById('roomsContainer');
+    const noRoomsMessage = document.getElementById('noRoomsMessage');
+    const roomCards = document.querySelectorAll('.room-card-wrapper');
+
+    // Remove duplicate options from room type and capacity filters
+    function removeDuplicateOptions(selectElement) {
+        const options = Array.from(selectElement.options);
+        const uniqueValues = new Set();
+        
+        options.forEach(option => {
+            if (option.value && uniqueValues.has(option.value)) {
+                selectElement.removeChild(option);
+            } else {
+                uniqueValues.add(option.value);
+            }
+        });
+    }
+
+    // Remove duplicates from room type and capacity filters
+    removeDuplicateOptions(roomTypeFilter);
+    removeDuplicateOptions(capacityFilter);
+
+    function filterRooms() {
+        const selectedType = roomTypeFilter.value.toLowerCase();
+        const selectedPriceRange = priceRangeFilter.value;
+        const selectedCapacity = capacityFilter.value;
+        const selectedSort = sortByFilter.value;
+
+        let visibleRooms = 0;
+
+        roomCards.forEach(card => {
+            const type = card.dataset.type.toLowerCase();
+            const price = parseInt(card.dataset.price);
+            const capacity = parseInt(card.dataset.capacity);
+
+            // Type filter - exact match
+            const typeMatch = !selectedType || type === selectedType;
+
+            // Price range filter
+            let priceMatch = true;
+            if (selectedPriceRange) {
+                const [min, max] = selectedPriceRange.split('-').map(Number);
+                if (max) {
+                    priceMatch = price >= min && price <= max;
+                } else {
+                    priceMatch = price >= min;
+                }
+            }
+
+            // Capacity filter
+            const capacityMatch = !selectedCapacity || capacity === parseInt(selectedCapacity);
+
+            // Show/hide card based on filters
+            if (typeMatch && priceMatch && capacityMatch) {
+                card.style.display = '';
+                visibleRooms++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Show/hide no rooms message
+        noRoomsMessage.style.display = visibleRooms === 0 ? 'block' : 'none';
+
+        // Sort rooms
+        const visibleCards = Array.from(roomCards).filter(card => card.style.display !== 'none');
+        visibleCards.sort((a, b) => {
+            const priceA = parseInt(a.dataset.price);
+            const priceB = parseInt(b.dataset.price);
+            const capacityA = parseInt(a.dataset.capacity);
+            const capacityB = parseInt(b.dataset.capacity);
+
+            switch (selectedSort) {
+                case 'price-asc':
+                    return priceA - priceB;
+                case 'price-desc':
+                    return priceB - priceA;
+                case 'capacity':
+                    return capacityA - capacityB;
+                default:
+                    return 0;
+            }
+        });
+
+        // Reorder rooms in the container
+        visibleCards.forEach(card => {
+            roomsContainer.appendChild(card);
+        });
+    }
+
+    // Add event listeners to all filters
+    roomTypeFilter.addEventListener('change', filterRooms);
+    priceRangeFilter.addEventListener('change', filterRooms);
+    capacityFilter.addEventListener('change', filterRooms);
+    sortByFilter.addEventListener('change', filterRooms);
+
+    // Initial filter
+    filterRooms();
+});
+</script>
+{% endblock %} 

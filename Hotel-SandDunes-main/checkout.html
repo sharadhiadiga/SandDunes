@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Check Out{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Check Out</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('checkout') }}" id="checkoutForm">
+                        <div class="mb-3">
+                            <label for="booking_id" class="form-label">Select Booking</label>
+                            <select class="form-select" id="booking_id" name="booking_id" required>
+                                <option value="">Choose a booking...</option>
+                                {% for booking in bookings %}
+                                <option value="{{ booking.booking_id }}" 
+                                        data-check-in="{{ booking.check_in_date.strftime('%Y-%m-%dT%H:%M') }}"
+                                        data-check-out="{{ booking.check_out_date.strftime('%Y-%m-%dT%H:%M') }}">
+                                    {{ booking.display_text }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="payment_method" class="form-label">Payment Method</label>
+                            <select class="form-select" id="payment_method" name="payment_method" required>
+                                <option value="">Select payment method...</option>
+                                <option value="cash">Cash</option>
+                                <option value="credit_card">Credit Card</option>
+                                <option value="debit_card">Debit Card</option>
+                                <option value="upi">UPI</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Process Check Out</button>
+                            <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const bookingId = document.getElementById('booking_id').value;
+    const paymentMethod = document.getElementById('payment_method').value;
+    
+    if (!bookingId || !paymentMethod) {
+        alert('Please select both booking and payment method');
+        return;
+    }
+    
+    if (confirm('Are you sure you want to check out this guest?')) {
+        this.submit();
+    }
+});
+</script>
+{% endblock %} 

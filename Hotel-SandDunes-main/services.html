@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Services{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Booking Selection -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Select Booking</h4>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('services') }}" class="row g-3">
+                        <div class="col-md-8">
+                            <select name="booking_id" class="form-select" onchange="this.form.submit()">
+                                <option value="">Select a booking...</option>
+                                {% for booking in bookings %}
+                                <option value="{{ booking.booking_id }}" 
+                                        {% if selected_booking_id == booking.booking_id|string %}selected{% endif %}>
+                                    Booking #{{ booking.booking_id }} - {{ booking.first_name }} {{ booking.last_name }} 
+                                    (Room {{ booking.room_number }} - {{ booking.type_name }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if selected_booking_id %}
+            <!-- Service Ordering -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Order Services</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('services') }}" class="row g-3">
+                        <input type="hidden" name="booking_id" value="{{ selected_booking_id }}">
+                        <div class="col-md-5">
+                            <select name="service_id" class="form-select" required>
+                                <option value="">Select a service...</option>
+                                {% for service in services %}
+                                <option value="{{ service.service_id }}">
+                                    {{ service.service_name }} - ${{ service.price }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" name="quantity" class="form-control" 
+                                   placeholder="Quantity" min="1" value="1" required>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-success">Add Service</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Ordered Services -->
+            {% if ordered_services %}
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Ordered Services</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in ordered_services %}
+                                <tr>
+                                    <td>{{ service.service_name }}</td>
+                                    <td>{{ service.quantity }}</td>
+                                    <td>${{ service.price }}</td>
+                                    <td>${{ service.total_price }}</td>
+                                    <td>
+                                        <span class="badge {% if service.status == 'completed' %}bg-success{% else %}bg-warning{% endif %}">
+                                            {{ service.status|title }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

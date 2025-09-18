@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to Our Hotel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: url('https://wallpaperaccess.com/full/3434814.jpg');
+        background-size: cover;
+        background-position: center;
+        height: 90vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        position: relative;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        padding: 2rem;
+        position: relative;
+        z-index: 2;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 15px;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        color: white;
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        color: white;
+    }
+
+    .btn-book-now {
+        padding: 1rem 2.5rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        position: relative;
+        z-index: 2;
+    }
+
+    .btn-book-now:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        background-color: var(--dark-color);
+        border-color: var(--dark-color);
+    }
+
+    .features-section {
+        padding: 5rem 0;
+        background-color: #f8f9fa;
+    }
+
+    .feature-card {
+        text-align: center;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .feature-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: var(--dark-color);
+    }
+
+    .feature-description {
+        color: #6c757d;
+    }
+
+    .cta-section {
+        background: url('https://wallpapershome.com/images/pages/ico_h/19257.jpg');
+        background-size: cover;
+        background-position: center;
+        padding: 5rem 0;
+        color: white;
+        text-align: center;
+        position: relative;
+        font-style: italic;
+    }
+
+    .cta-content {
+        position: relative;
+        z-index: 2;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 2rem;
+        border-radius: 15px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        color: white;
+        font-style: italic;
+    }
+
+    .cta-description {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        color: white;
+    }
+
+    .btn-light {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: var(--dark-color);
+        position: relative;
+        z-index: 2;
+    }
+
+    .btn-light:hover {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Welcome to Our Hotel</h1>
+        <p class="hero-subtitle">Experience luxury and comfort at its finest</p>
+        <a href="{{ url_for('availability') }}" class="btn btn-primary btn-book-now">Book Now</a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bed"></i>
+                    </div>
+                    <h3 class="feature-title">Luxurious Rooms</h3>
+                    <p class="feature-description">Experience comfort in our well-appointed rooms with modern amenities.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3 class="feature-title">Fine Dining</h3>
+                    <p class="feature-description">Enjoy exquisite cuisine prepared by our world-class chefs.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-spa"></i>
+                    </div>
+                    <h3 class="feature-title">Spa & Wellness</h3>
+                    <p class="feature-description">Rejuvenate your body and mind with our premium spa services.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section">
+    <div class="container cta-content">
+        <h2 class="cta-title">Ready for an Unforgettable Stay?</h2>
+        <p class="cta-description">Book your room now and enjoy exclusive benefits and special offers.</p>
+        <a href="{{ url_for('availability') }}" class="btn btn-light btn-lg">Check Availability</a>
+    </div>
+</section>
+{% endblock %}

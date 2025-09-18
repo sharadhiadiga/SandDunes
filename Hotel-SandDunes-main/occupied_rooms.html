@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Occupied Rooms{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Room Status</h2>
+    
+    <div class="row">
+        {% for room in rooms %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header {% if room.status == 'occupied' %}bg-danger text-white{% else %}bg-warning{% endif %}">
+                    <h5 class="mb-0">
+                        Room {{ room.room_number }} - {{ room.type_name }}
+                        <span class="badge {% if room.status == 'occupied' %}bg-light text-dark{% else %}bg-dark{% endif %} float-end">
+                            {{ room.status|title }}
+                        </span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Guest:</strong> {{ room.first_name }} {{ room.last_name }}</p>
+                            <p><strong>Phone:</strong> {{ room.phone }}</p>
+                            <p><strong>Check-in:</strong> {{ room.check_in_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                            <p><strong>Check-out:</strong> {{ room.check_out_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Room Type:</strong> {{ room.type_name }}</p>
+                            <p><strong>Price per Night:</strong> ${{ room.base_price }}</p>
+                            <p><strong>Booking ID:</strong> #{{ room.booking_id }}</p>
+                        </div>
+                    </div>
+                    {% if room.status == 'occupied' %}
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('checkout', booking_id=room.booking_id) }}" class="btn btn-primary">Check Out</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

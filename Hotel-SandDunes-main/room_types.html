@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Room Types{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Room Types</h2>
+        <a href="{{ url_for('add_room_type') }}" class="btn btn-primary">Add New Room Type</a>
+    </div>
+
+    {% for room_type in room_types %}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">{{ room_type.type_name }}</h3>
+                <div>
+                    <a href="{{ url_for('edit_room_type', type_id=room_type.type_id) }}" class="btn btn-light btn-sm">Edit</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <p><strong>Description:</strong> {{ room_type.description }}</p>
+                    <p><strong>Base Price:</strong> ${{ room_type.base_price }}/night</p>
+                    <p><strong>Capacity:</strong> {{ room_type.capacity }} persons</p>
+                    <p><strong>Amenities:</strong> {{ room_type.amenities }}</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">Room Status Summary</h5>
+                            <p><strong>Total Rooms:</strong> {{ room_type.total_rooms }}</p>
+                            <p><strong>Available:</strong> {{ room_type.available_rooms }}</p>
+                            <p><strong>Occupied:</strong> {{ room_type.occupied_rooms }}</p>
+                            <p><strong>Reserved:</strong> {{ room_type.reserved_rooms }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h4>Rooms</h4>
+            <div class="row">
+                {% for room in room_type.rooms %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-header {% if room.current_status == 'occupied' %}bg-danger text-white{% elif room.current_status == 'reserved' %}bg-warning{% else %}bg-success text-white{% endif %}">
+                            <h5 class="mb-0">
+                                Room {{ room.room_number }}
+                                <span class="badge {% if room.current_status == 'occupied' %}bg-light text-dark{% elif room.current_status == 'reserved' %}bg-dark{% else %}bg-light text-dark{% endif %} float-end">
+                                    {{ room.current_status|title }}
+                                </span>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if room.current_status != 'available' %}
+                            <p><strong>Guest:</strong> {{ room.first_name }} {{ room.last_name }}</p>
+                            <p><strong>Check-in:</strong> {{ room.check_in_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                            <p><strong>Check-out:</strong> {{ room.check_out_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                            {% if room.current_status == 'occupied' %}
+                            <div class="text-center mt-2">
+                                <a href="{{ url_for('checkout', booking_id=room.booking_id) }}" class="btn btn-primary btn-sm">Check Out</a>
+                            </div>
+                            {% endif %}
+                            {% else %}
+                            <p class="text-center text-success">Available for booking</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 
