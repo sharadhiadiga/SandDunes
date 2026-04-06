@@ -17,12 +17,19 @@ A **Flask + MySQL based Hotel Management System** that allows managing bookings,
 
 ## 📂 Project Structure
 ├── app.py
+
 ├── requirements.txt 
+
 ├── templates/
+
 ├── static/
+
 │ ├── css/style.css 
+
 │ └── js/script.js 
+
 ├── db/ 
+
 └── .env
 
 ---
