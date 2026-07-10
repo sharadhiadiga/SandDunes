@@ -76,9 +76,9 @@ Designed to streamline day-to-day hotel management, SandDunes provides an organi
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/sharadhiadiga/hotel-management-system.git
+git clone https://github.com/sharadhiadiga/SandDunes.git
 
-cd hotel-management-system
+cd SandDunes/Hotel-SandDunes-main
 ```
 
 ### Create a Virtual Environment
@@ -87,7 +87,7 @@ cd hotel-management-system
 python -m venv venv
 ```
 
-Activate the environment:
+Activate the virtual environment:
 
 **Windows**
 
@@ -107,35 +107,15 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Configure Environment Variables
+### Configure the Database
 
-Create a `.env` file and add:
-
-```env
-FLASK_SECRET_KEY=your-secret-key
-FLASK_DEBUG=True
-
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=yourpassword
-DB_NAME=hotel_management
-```
-
-### Set Up the Database
-
-Create a MySQL database named:
-
-```text
-hotel_management
-```
-
-Import the required tables for:
-
-- Rooms
-- Customers
-- Bookings
-- Services
-- Billing
+1. Create a MySQL database.
+2. Update the database connection details inside **`app.py`** with your:
+   - Host
+   - Username
+   - Password
+   - Database name
+3. Create the required tables (`rooms`, `bookings`, `customers`, `services`, `billing`, etc.) before running the application.
 
 ### Run the Application
 
